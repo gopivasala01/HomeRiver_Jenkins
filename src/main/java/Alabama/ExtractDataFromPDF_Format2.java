@@ -17,13 +17,14 @@ public class ExtractDataFromPDF_Format2
 	//public static void main(String[] args) throws Exception 
 	{
 		// TODO Auto-generated method stub
-		//File file = new File("D:\\Beetlerim Docs\\Property ware\\Lease Close outs\\Alabama\\Format 2\\Lease_0922_0923_248_S_Hillcrest_Rd_AL_Womac.pdf");
+		//File file = new File("C:\\Gopi\\Projects\\Property ware\\Lease Close Outs\\PDFS\\Lease_03.22_08.23_3676_Burlington_Dr_AL_Owens.pdf");
 		File file = RunnerClass.getLastModified();
 		FileInputStream fis = new FileInputStream(file);
 		PDDocument document = PDDocument.load(fis);
 	    String text = new PDFTextStripper().getText(document);
 	    System.out.println(text);
 	    text = text.replaceAll(System.lineSeparator(), " ");
+	    System.out.println(text);
 	    System.out.println("------------------------------------------------------------------");
 	    
 	    
@@ -178,8 +179,12 @@ public class ExtractDataFromPDF_Format2
 	    	try
     		{
     			AL_PropertyWare.petRent = text.substring(text.indexOf(PDFAppConfig_Format2.petRent_Prior)+PDFAppConfig_Format2.petRent_Prior.length()).split(" ")[0].trim();
-    			
-				 System.out.println("Pet rent = "+AL_PropertyWare.petRent.trim());
+				 //System.out.println("Pet rent = "+AL_PropertyWare.petRent.trim());
+				 if(RunnerClass.onlyDigits(AL_PropertyWare.pet1Type)==false)
+				    {
+				    	 AL_PropertyWare.petRent = text.substring(text.indexOf(PDFAppConfig_Format2.petRent_Prior2)+PDFAppConfig_Format2.petRent_Prior2.length()).trim().split(" ")[0];
+				    }
+				 System.out.println("Pet rent= "+AL_PropertyWare.petRent.trim());
     		}
     		
     		catch(Exception e1)
@@ -366,8 +371,16 @@ public class ExtractDataFromPDF_Format2
 		    }
 		    catch(Exception e)
 		    {
+		    	try
+		    	{
+		    		AL_PropertyWare.petOneTimeNonRefundableFee = text.substring(text.indexOf(PDFAppConfig_Format2.petOneTimeNonRefundable_Prior2)+PDFAppConfig_Format2.petOneTimeNonRefundable_Prior2.length()).trim().split(",")[0];
+				    System.out.println("pet one time non refundable = "+AL_PropertyWare.petOneTimeNonRefundableFee.trim());
+		    	}
+		    	catch(Exception e2)
+		    	{
 		    	AL_PropertyWare.petOneTimeNonRefundableFee =  "Error";
-		    	e.printStackTrace();
+		    	e2.printStackTrace();
+		    	}
 		    }  
 		    
 		    

@@ -21,14 +21,12 @@ public class PDFAppConfig_Format2
 	
 	public static String HVACAirFilter_prior = "HVAC Filter Maintenance Program Fee of $";
 	
-	public static String occupants_Prior = "Name, Age \r\n"
-			+ "";
+	public static String occupants_Prior = "Name, Age ";
 	public static String occupants_After = "The Tenant and the Minor Occupants listed above";
 	
 	public static String lateFeeDay_Prior = "an initial  late  charge on the ";
 	
-	public static String initialLateChargeFee_Prior = "day of the \r\n"
-			+ "month equal  to  $";
+	public static String initialLateChargeFee_Prior = "day of the  month equal  to  $";
 	
 	public static String additionaLateCharge_Prior = "additional late charge of  $";
 	
@@ -38,12 +36,13 @@ public class PDFAppConfig_Format2
 	public static String securityDeposit_After = " (the “Security Deposit”)";
 	
 	public static String petRent_Prior = "Tenant will pay Landlord monthly pet rent in the amount of $";
+	public static String petRent_Prior2 = "as additional rent, a monthly fee of $";
 	
 	public static String petType_Prior = "Type:";
 	public static String petType_After = "Breed:";
 	
 	public static String petOneTimeNonRefundable_Prior = "upon execution of this agreement, pay Landlord $";
 	public static String petOneTimeNonRefundable_After = " as a one-time, non-refundable";
-	
+	public static String petOneTimeNonRefundable_Prior2 = "Tenant shall pay a pet deposit in the amount of $";	
 	
 }
