@@ -51,15 +51,15 @@ static String AB_commencementDate_Prior = "Commencement Date:";
 	static String AB_securityDeposity_After = ". The additional deposit is an increase in the security deposit in the lease";
 	
 	//TODO Check on prorated rent of pet
-	static String AB_proratedPetRent_Prior = "Prorated Pet Rent: On \r\n"
-			+ "or before";
+	static String AB_proratedPetRent_Prior = "Tenant will pay Landlord $";
 	static String AB_proratedPetRent_After = "as prorated pet rent from the \r\n"
 			+ "Commencement Date through the last day of the month in which this Lease begins.";
 	
 	static String AB_petRent_Prior = "(2)The monthly rent in the lease is increased by $";
 	static String AB_petRent_After = ",for a total monthly rent amount of $";
 	
-	static String AB_petFee_Prior = "Prorated Pet Rent: On or before";
+	static String AB_petFee_Prior = "pet rent in the amount of $";
+	static String AB_petFee2_Prior = "a total monthly rent amount of $";
 	static String AB_petFee_After = "Tenant will pay Landlord $";
 	
 	
@@ -73,6 +73,10 @@ static String AB_commencementDate_Prior = "Commencement Date:";
 	static String AB_petOneTimeNonRefundable_Prior = "Tenant will, upon execution of this agreement, pay Landlord ";
 	static String AB_petOneTimeNonRefundable_Prior_ = " as a one-time, non-refundable  \r\n"
 			+ "payment.";
+	
+	static String AB_typeWord_Prior = "Tenant may keep the following pet(s) on the Property until the above-referenced lease ends. ";
+	static String AB_typeWord_After = "B. CONSIDERATION:";
+	
 	
 	static String AB_lateFeeChargeDay_Prior = "on the 1st day of the month it is due will be assessed an initial late charge on the";
 	
@@ -138,6 +142,8 @@ static String AB_commencementDate_Prior = "Commencement Date:";
 	static String AB1_lateFee_Prior = "th day of the \r\n"
 			+ "month equal  to  ";
 	static String AB1_lateFee_After = "  and additional late charge of  ";
+	
+	static String concessionAddendumText ="This is a CONCESSION ADDENDUM to your Lease Agreement";
 	
 
 

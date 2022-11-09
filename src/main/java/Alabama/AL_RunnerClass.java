@@ -33,6 +33,7 @@ public static FileInputStream AZ_fis;
 public static StringBuilder AZ_stringBuilder = new StringBuilder() ;
 public static WebDriverWait AZ_wait;
 public static FileOutputStream AZ_fos;
+public static String pdfFormatType;
 
 	public boolean runAutomation(String portfolio, String leaseName, String leaseOwnername)  throws Exception
 	{
@@ -52,8 +53,15 @@ public static FileOutputStream AZ_fos;
 			return false;
 		//Extract data from PDF
 		
+		if(RunnerClass.portfolio.contains("MAN")||RunnerClass.portfolio.contains("HS")||RunnerClass.portfolio.contains("MCH"))
+		{
+		AL_PropertyWare.portfolioType = "MCH";
+		}
+		else
+		AL_PropertyWare.portfolioType = "Others";
+		
 		// Decide the PDF Format
-        String pdfFormatType = AL_RunnerClass.decidePDFFormat();
+        pdfFormatType = AL_RunnerClass.decidePDFFormat();
         if(pdfFormatType.equalsIgnoreCase("Format1"))
         {
         	System.out.println("PDF Type = Format 1");
@@ -81,12 +89,12 @@ public static FileOutputStream AZ_fos;
         if(!AL_PropertyWare.leaseStartDate_PW.trim().equalsIgnoreCase(startDate))
         {
         	System.out.println("Start Date doesn't Match");
- 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Start Date is not matched");
+ 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Start Date is not matched"+'\n');
         }
         if(!AL_PropertyWare.leaseEndDate_PW.trim().equalsIgnoreCase(endDate))
         {
         	System.out.println("End Date doesn't Match");
- 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "End Date is not matched");
+ 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "End Date is not matched"+'\n');
         }
         /*
         if(!AL_PropertyWare.leaseStartDate_PW.trim().equalsIgnoreCase(RunnerClass.convertDate(AL_PropertyWare.commensementDate).trim()))
@@ -99,21 +107,28 @@ public static FileOutputStream AZ_fos;
 		//Insert data into propertyware
 		//Check the Portfolio Type - MCH&HS or Other personal portfolios
 		
-		if(RunnerClass.portfolio.contains("MAN")||RunnerClass.portfolio.contains("HS"))
-		{
-			AL_InsertDataIntoPropertyWare insertDataInPW_MCH_HS = new AL_InsertDataIntoPropertyWare();
+		//if(RunnerClass.portfolio.contains("MAN")||RunnerClass.portfolio.contains("HS"))
+		//{
+		//AL_PropertyWare.portfolioType = "MCH";
+			/*
+		AL_InsertDataIntoPropertyWare insertDataInPW_MCH_HS = new AL_InsertDataIntoPropertyWare();
 			boolean insertingDataResult =  insertDataInPW_MCH_HS.insertData();
 			//AZ_driver.close();
-			return true;
-		}
-		else
-		{
+			return true;*/
+		//}
+		//else
+		//{
+		//	AL_PropertyWare.portfolioType = "Others";
+			/*
 			AL_InsertDataIntoPropertyWare_OtherPortfolios insertDataInPW_Other = new AL_InsertDataIntoPropertyWare_OtherPortfolios();
 		    boolean insertingDataResult =  insertDataInPW_Other.insertData();
 		    //AZ_driver.close();
 		    return true;
-		}
+		    */
+		//}
 		
+        InsertDataIntoPropertyWare_UsingConfigTable.insertData();
+		return true;
 	}
 
 	public  static void openBrowser()
@@ -160,7 +175,7 @@ public static FileOutputStream AZ_fos;
 	         else 
 	         {
 	        	System.out.println("Wrong PDF Format");
-	 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Wrong Lease Agreement PDF Format");
+	 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Wrong Lease Agreement PDF Format"+'\n');
 	 			RunnerClass.leaseCompletedStatus = 3;
 	 			return "Others";
 	          }
@@ -168,7 +183,7 @@ public static FileOutputStream AZ_fos;
 		catch(Exception e)
 		{
 			System.out.println("Lease Agreement was not downloaded, Bad Network");
- 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Agreement was not downloaded, Bad Network");
+ 	    	InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Agreement was not downloaded, Bad Network"+'\n');
  			RunnerClass.leaseCompletedStatus = 3;
  			return "Others";
 		}

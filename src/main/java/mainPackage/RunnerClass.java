@@ -3,7 +3,10 @@ package mainPackage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +29,7 @@ public class RunnerClass
 	public static JavascriptExecutor js;
 	public static File file;
 	public static FileInputStream fis;
-	public static StringBuilder stringBuilder = new StringBuilder() ;
+	public static StringBuilder stringBuilder = new StringBuilder();
 	public static WebDriverWait wait;
 	public static FileOutputStream fos;
 	public static RunnerClass runnerClassObject;
@@ -72,13 +75,13 @@ public class RunnerClass
 				break;
 			}
 			//Test
-		    AL_RunnerClass.AZ_driver.close();
 			if(leaseCompletedStatus==1)
 			InsertDataIntoDatabase.insertData(leaseName, "Completed", 4);
 			else if(leaseCompletedStatus==2)InsertDataIntoDatabase.insertData(leaseName, "Failed", 3);
 			     else InsertDataIntoDatabase.insertData(leaseName, "Review",5);
 			
 			System.out.println(market +" ---- " + leaseName+" ---- "+ leaseCompletedStatus);
+			AL_RunnerClass.AZ_driver.close();
 			
 		}
 	}
@@ -93,6 +96,15 @@ public class RunnerClass
         }
         return false;
     }
+	public static int nthIndexOf(String str, String subStr, int count) {
+	    int ind = -1;
+	    while(count > 0) {
+	        ind = str.indexOf(subStr, ind + 1);
+	        if(ind == -1) return -1;
+	        count--;
+	    }
+	    return ind;
+	}
 	
 	public static String convertDate(String date)
 	{
@@ -109,18 +121,50 @@ public class RunnerClass
 		return dateIn;
 				
 	}
+	
+	public static String dateToMonthAndYear_FirstFullMonth(String date) throws Exception
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		Date d = sdf.parse(date);
+		System.out.println(d);
+		SimpleDateFormat sdf2 = new SimpleDateFormat("MMMMM yyyy");
+		System.out.println(sdf2.format(d));
+		return sdf2.format(d);
+		
+	}
+	
 	public static String DateModified(String date)
 	{
 		String newDay;
-		int dayInDate =Integer.parseInt(date.split("/")[0]);
+		int dayInDate =Integer.parseInt(date.split("/")[1]);
 		if(dayInDate<=25)
 		{
 			newDay = "25";
 		}
 		else newDay = String.valueOf(dayInDate);
-		
-		return date.replaceFirst(date.split("/")[0], newDay);
+		date = date.replaceFirst(date.split("/")[1], newDay);
+		return date;
 	}
+	public static String extractNumber(String str) 
+	{
+	    //String str = "26.23,for";
+	    StringBuilder myNumbers = new StringBuilder();
+	    for (int i = 0; i < str.length(); i++) 
+	    {
+	    	char c = str.charAt(i);
+	    	
+	        if (Character.isDigit(str.charAt(i))||(String.valueOf(c).equals(".")&&i!=str.length()-1)) 
+	        {
+	            myNumbers.append(str.charAt(i));
+	            //System.out.println(str.charAt(i) + " is a digit.");
+	        } else {
+	            //System.out.println(str.charAt(i) + " not a digit.");
+	        }
+	    }
+	   // System.out.println("Your numbers: " + myNumbers.toString());
+	    return myNumbers.toString();
+	}
+	
 	public static String firstDayOfFullMonth(String date)
 	{
 		String day,month,year;
@@ -135,6 +179,27 @@ public class RunnerClass
 		else 
 		{
 			month =String.valueOf(Integer.parseInt(monthInText)+1);
+		    year = splitDate[2];
+		}
+		return month+"/"+day+"/"+year;
+		
+		
+	}
+	
+	public static String NextMonthOffirstDayOfFullMonth(String date)
+	{
+		String day,month,year;
+		String[] splitDate =date.split("/");
+		day = "01";
+		String monthInText = splitDate[0];
+		if(monthInText.trim().equalsIgnoreCase("12"))
+		{	
+			month="02";
+		    year = String.valueOf((Integer.parseInt(splitDate[2])+1));
+		}
+		else 
+		{
+			month =String.valueOf(Integer.parseInt(monthInText)+2);
 		    year = splitDate[2];
 		}
 		return month+"/"+day+"/"+year;

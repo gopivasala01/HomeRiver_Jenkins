@@ -56,7 +56,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					
 					//Full Month's Rent
 					moveInCharges[0][0]=AppConfig.proratedRent_AccountCode;
-					moveInCharges[0][1]=AppConfig.proratedRent_AccountRef;
+					moveInCharges[0][1]=RunnerClass.dateToMonthAndYear_FirstFullMonth(RunnerClass.firstDayOfFullMonth(RunnerClass.convertDate(AL_PropertyWare.commensementDate)));
 					moveInCharges[0][2]=AL_PropertyWare.monthlyRent;
 					moveInCharges[0][3]=RunnerClass.convertDate(AL_PropertyWare.commensementDate);
 					
@@ -73,9 +73,9 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						moveInCharges[2][1]=AppConfig.proratedPetRent_AccountRef;
 						moveInCharges[2][2]=AL_PropertyWare.proratedPetRent;
 						moveInCharges[2][3]=RunnerClass.convertDate(AL_PropertyWare.commensementDate);
-						// Check if the Security Deposit is checked and enter them instead of Prorated Pet Rent
+						// Check if the Security Deposit is checked and enter them instead Pet one time non refundable
 						
-						if(AL_PropertyWare.petSecurityDeposit.trim().equalsIgnoreCase(".")||AL_PropertyWare.petSecurityDeposit.trim().equalsIgnoreCase(""))
+						if(AL_PropertyWare.petSecurityDeposit.trim().equalsIgnoreCase("."))
 						{
 							moveInCharges[3][0]=AppConfig.petSecurityDeposit_AccountCode;
 							moveInCharges[3][1]=AppConfig.petSecurityDeposit_AccountRef;
@@ -84,6 +84,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						else 
 						{
+							//Pet One Time Non Refundable
 							moveInCharges[3][0]=AppConfig.petRent_AccountCode;
 							moveInCharges[3][1]=AppConfig.petRent_AccountRef;
 							moveInCharges[3][2]=AL_PropertyWare.petOneTimeNonRefundableFee;
@@ -160,7 +161,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						{
 							autoCharges[3][0]=AppConfig.proratedPetRent_AccountCode;
 							autoCharges[3][1]="Pet Rent"; // First Full Month
-							autoCharges[3][2]=AL_PropertyWare.proratedPetRent;
+							autoCharges[3][2]=AL_PropertyWare.petRent;
 							//if(AL_PropertyWare.proratedRentDate.contains("n/a"))
 								autoCharges[3][3]=RunnerClass.firstDayOfFullMonth(RunnerClass.convertDate(AL_PropertyWare.commensementDate));;  
 							//else
@@ -196,9 +197,9 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 								
 							//if(ExtractDataFromPDF.petFlag==true)
 							//{
-								autoCharges[2][0]=AppConfig.proratedPetRent_AccountCode;
-								autoCharges[2][1]="Pet Rent"; // First Full Month
-								autoCharges[2][2]=AL_PropertyWare.proratedPetRent;
+								autoCharges[2][0]=AppConfig.proratedRent_AccountCode;
+								autoCharges[2][1]="Pro Rate Rent"; // First Full Month
+								autoCharges[2][2]=AL_PropertyWare.proratedRent;
 								//if(AL_PropertyWare.proratedRentDate.contains("n/a"))
 									autoCharges[2][3]= RunnerClass.firstDayOfFullMonth(RunnerClass.convertDate(AL_PropertyWare.commensementDate));;  //Need to calculate to get 3rd month from the moveindate
 								//else
@@ -238,23 +239,41 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					System.out.println("------Move In Charges-------");
 					for(int i=0;i<moveInCharges.length;i++)
 					{
+						int flagToCheckIfMoveInChargeAlreadyAvailable=0;
 						//for(int j=0;j<=i;j++)
 						//{
 							//Check if the Move In Charge already available
-							/*List<WebElement> existingAutoCharges = AL_RunnerClass.AZ_driver.findElements(Locators.moveInCharges_List);
+							List<WebElement> existingAutoCharges = AL_RunnerClass.AZ_driver.findElements(Locators.moveInCharges_List);
+							System.out.println(moveInCharges[i][0]+" "+moveInCharges[i][1]+" "+moveInCharges[i][2]+" "+moveInCharges[i][3]);
 							for(int k=0;k<existingAutoCharges.size();k++)
 							{
 								String autoChargeDescription = existingAutoCharges.get(k).getText();
 								if(autoChargeDescription.equalsIgnoreCase(moveInCharges[i][1]))
 								{
 									System.out.println(moveInCharges[i][1]+"   is already available");
-									continue;
+									flagToCheckIfMoveInChargeAlreadyAvailable =1;
+									break;
 								}
 							}
-							*/
+							if(flagToCheckIfMoveInChargeAlreadyAvailable==1)
+								continue;
 							try
 							{
-						System.out.println(moveInCharges[i][0]+" "+moveInCharges[i][1]+" "+moveInCharges[i][2]+" "+moveInCharges[i][3]);
+							if(moveInCharges[i][2]==null||moveInCharges[i][2]=="Error"||RunnerClass.onlyDigits(moveInCharges[i][2])==false)
+							{
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge - "+moveInCharges[i][1]+'\n');
+								temp=1;
+								continue;
+							}
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+							
+							
+							try
+							{
 						AL_RunnerClass.AZ_driver.findElement(Locators.newCharge).click();
 						Thread.sleep(2000);
 						Select AutoChargesDropdown = new Select(AL_RunnerClass.AZ_driver.findElement(Locators.accountDropdown));
@@ -262,7 +281,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						{
 						if(moveInCharges[i][1].equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Code");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Code"+'\n');
 							temp=1;
 						}
 						else 
@@ -272,7 +291,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Code");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Code"+'\n');
 							temp=1;
 						}
 						try
@@ -282,14 +301,14 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Description");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Account Description"+'\n');
 							temp=1;
 						}
 						try
 						{
 							if(moveInCharges[i][2].equalsIgnoreCase("Error"))
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Amount");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Amount"+'\n');
 								temp=1;
 							}
 							else
@@ -303,14 +322,14 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Amount");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Amount"+'\n');
 							temp=1;
 						}
 						try
 						{
 							if(moveInCharges[i][3].equalsIgnoreCase("Error"))
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Date");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Date"+'\n');
 								temp=1;
 							}
 							else
@@ -323,16 +342,18 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Date");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Move In Charge Date"+'\n');
 							temp=1;
 						}
-						AL_RunnerClass.AZ_driver.findElement(Locators.moveInChargeCancel).click();
-						//AL_RunnerClass.AZ_driver.findElement(Locators.moveInChargeSaveButton).click();
+						Thread.sleep(2000);
+						//AL_RunnerClass.AZ_driver.findElement(Locators.moveInChargeCancel).click();
+						AL_RunnerClass.AZ_driver.findElement(Locators.moveInChargeSaveButton).click();
+						Thread.sleep(3000);
 						AL_RunnerClass.AZ_driver.navigate().refresh();
 						}
 						catch(Exception e)
 						{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, moveInCharges[i][1]+"Is not saved");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, moveInCharges[i][1]+"Is not saved"+'\n');
 						temp=1;
 						}
 						//break;
@@ -364,6 +385,20 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 								}
 							}
 							
+							try
+							{
+							if(autoCharges[i][2]==null||autoCharges[i][2]=="Error"||RunnerClass.onlyDigits(autoCharges[i][2])==false)
+							{
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge - "+autoCharges[i][1]+'\n');
+								temp=1;
+								continue;
+							}
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+							
 						try
 						{
 							System.out.println(autoCharges[i][0]+" "+autoCharges[i][1]+" "+autoCharges[i][2]+" "+autoCharges[i][3]);
@@ -371,7 +406,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							{
 								if(autoCharges[i][0].equalsIgnoreCase("Error"))
 								{
-									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Account code");
+									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Account code"+'\n');
 									temp=1;
 								}
 								else
@@ -385,7 +420,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							}
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Account code");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Account code"+'\n');
 								temp=1;
 							}
 							//Start Date
@@ -393,7 +428,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							{
 								if(autoCharges[i][3].equalsIgnoreCase("Error"))
 								{
-									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Start Date");
+									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Start Date"+'\n');
 									temp=1;
 								}
 								else
@@ -410,7 +445,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Start Date");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Start Date"+'\n');
 								temp=1;
 							}
 							//End Date
@@ -419,7 +454,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							{
 								if(autoCharges[i][4].equalsIgnoreCase("Error"))
 								{
-									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge End Date");
+									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge End Date"+'\n');
 									temp=1;
 								}
 								else
@@ -431,7 +466,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							}
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge End Date");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge End Date"+'\n');
 								temp=1;
 							}
 							
@@ -441,14 +476,14 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							}
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Referance Field");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Referance Field"+'\n');
 								temp=1;
 							}
 							try
 							{
 								if(autoCharges[i][2].equalsIgnoreCase("Error"))
 								{
-									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Amount");
+									InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Amount"+'\n');
 									temp=1;
 								}
 								else
@@ -461,7 +496,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							}
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Amount");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Amount"+'\n');
 								temp=1;
 							}
 							
@@ -471,17 +506,18 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 							}
 							catch(Exception e)
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Description");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Auto Charge Description"+'\n');
 								temp=1;
 							}
 							Thread.sleep(2000);
-							AL_RunnerClass.AZ_driver.findElement(Locators.autoCharge_CancelButton).click();
-							
+							//AL_RunnerClass.AZ_driver.findElement(Locators.autoCharge_CancelButton).click();
+							AL_RunnerClass.AZ_driver.findElement(Locators.autoCharge_SaveButton).click();
+							Thread.sleep(2000);
 							
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, autoCharges[i][1]+"Is not saved");	
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, autoCharges[i][1]+"Is not saved"+'\n');	
 							temp=1;
 						}
 						//break;
@@ -493,7 +529,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.RCDetails.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "RC Details");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "RC Details"+'\n');
 							temp=1;
 						}
 						else
@@ -504,7 +540,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "RC Details");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "RC Details"+'\n');
 						temp=1;
 					}
 					//Early Termination
@@ -513,8 +549,12 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.earlyTermination.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Early Termination");
-							temp=1;
+							//InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Early Termination"+'\n');
+							//temp=1;
+							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.earlyTermFee2x)).build().perform();
+							AL_RunnerClass.AZ_driver.findElement(Locators.earlyTermFee2x).click();
+							Select earlyTermination_List = new Select(AL_RunnerClass.AZ_driver.findElement(Locators.earlyTermination_List));
+							earlyTermination_List.selectByVisibleText("NO");
 						}
 						else
 						{
@@ -529,21 +569,26 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Early Termination");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Early Termination"+'\n');
 						e.printStackTrace();
 						temp=1;
 					}
 					//Enrolled in FilterEasy
 					try
 					{
-					AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy)).build().perform();
-					AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy).click();
-					Select enrolledInFilterEasyList = new Select(AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy_List));
-					enrolledInFilterEasyList.selectByVisibleText("YES");
+						AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy)).build().perform();
+						AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy).click();
+						Select enrolledInFilterEasyList = new Select(AL_RunnerClass.AZ_driver.findElement(Locators.enrolledInFilterEasy_List));
+						if(RunnerClass.onlyDigits(AL_PropertyWare.airFilterFee)==true)
+						{
+						enrolledInFilterEasyList.selectByVisibleText("YES");
+						}
+						else enrolledInFilterEasyList.selectByVisibleText("NO");
+							
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Enrolled in FilterEasy");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Enrolled in FilterEasy"+'\n');
 						temp=1;
 						e.printStackTrace();
 					}
@@ -557,7 +602,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Needs New Lease");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Needs New Lease"+'\n');
 						temp=1;
 					}
 					//Lease Occupants
@@ -565,170 +610,116 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.occupants.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Occupants");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Occupants"+'\n');
 							temp=1;
 						}
 						else
 						{
 						AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.leaseOccupants)).build().perform();
+						AL_RunnerClass.AZ_driver.findElement(Locators.leaseOccupants).clear();
+						Thread.sleep(1000);
 						AL_RunnerClass.AZ_driver.findElement(Locators.leaseOccupants).sendKeys(AL_PropertyWare.occupants);
 						}
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Occupants");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Lease Occupants"+'\n');
 						temp=1;
 					}
 					if(ExtractDataFromPDF_Format2.petFlag==true)
 					{
 					//pet information
+						
+						//Pet Type
+						String petType = String.join(",", AL_PropertyWare.petType);
 						try
 						{
-							if(AL_PropertyWare.pet1Type.equalsIgnoreCase("Error")||AL_PropertyWare.pet2Type.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Types");
-								temp=1;
-							}
-							else 
-							{
-								AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.pet1Type)).build().perform();
-								AL_RunnerClass.AZ_driver.findElement(Locators.pet1Type).sendKeys(AL_PropertyWare.pet2Type+","+AL_PropertyWare.pet2Type);
-							}
+							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.pet1Type)).build().perform();
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Type).clear();
+							Thread.sleep(1000);
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Type).sendKeys(petType);
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Types");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Types"+'\n');
 							temp=1;
 						}
+						Thread.sleep(2000);
+						//Pet Breed
+						String petBreed = String.join(",", AL_PropertyWare.petBreed);
 						try
 						{
-							if(AL_PropertyWare.pet1Breed.equalsIgnoreCase("Error")||AL_PropertyWare.pet2Breed.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Breeds");
-								temp=1;
-							}
-							else
-							{
-								AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.pet1Breed)).build().perform();
-								AL_RunnerClass.AZ_driver.findElement(Locators.pet1Breed).sendKeys(AL_PropertyWare.pet1Breed+","+AL_PropertyWare.pet1Breed);
-							}
+							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.pet1Breed)).build().perform();
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Breed).clear();
+							Thread.sleep(1000);
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Breed).sendKeys(petBreed);
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Breeds");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Breed"+'\n');
 							temp=1;
 						}
+						Thread.sleep(2000);
+						//Pet Weight
+						String petWeight = String.join(",", AL_PropertyWare.petWeight);
 						try
 						{
-							if(AL_PropertyWare.pet1Weight.equalsIgnoreCase("Error")||AL_PropertyWare.pet2Weight.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Weights");
-								temp=1;
-							}
-							else
-							{
 							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.pet1Weight)).build().perform();
-							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Weight).sendKeys(AL_PropertyWare.pet1Weight+","+AL_PropertyWare.pet2Weight);
-							}
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Weight).clear();
+							Thread.sleep(1000);
+							AL_RunnerClass.AZ_driver.findElement(Locators.pet1Weight).sendKeys(petWeight);
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Weights");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Pet Weight"+'\n');
 							temp=1;
 						}
-					//Service Animal Information
-						try
-						{
-							if(AL_PropertyWare.serviceAnimalType.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Type");
-								temp=1;
-							}
-							else
-							{
-							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalType)).build().perform();
-							AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalType).sendKeys(AL_PropertyWare.serviceAnimalType);
-							}
-						}
-						catch(Exception e)
-						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Type");
-							temp=1;
-						}
-						try
-						{
-							if(AL_PropertyWare.serviceAnimalBreed.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Breed");
-								temp=1;
-							}
-							else
-							{
-							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalBreed)).build().perform();
-							AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalBreed).sendKeys(AL_PropertyWare.serviceAnimalBreed);
-							}
-						}
-						catch(Exception e)
-						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Breed");
-							temp=1;
-						}
-						try
-						{
-							if(AL_PropertyWare.serviceAnimalWeight.equalsIgnoreCase("Error"))
-							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Weight");
-								temp=1;
-							}
-							else
-							{
-							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalWeight)).build().perform();
-							AL_RunnerClass.AZ_driver.findElement(Locators.serviceAnimalWeight).sendKeys(AL_PropertyWare.serviceAnimalWeight);
-							}
-						}
-						catch(Exception e)
-						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Service Animal Weight");
-							temp=1;
-						}
+						
 					//Pet Rent
 						try
 						{
 							if(AL_PropertyWare.petRent.equalsIgnoreCase("Error"))
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet Rent");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet Rent"+'\n');
 								temp=1;
 							}
 							else
 							{
 							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.petAmount)).build().perform();
+							AL_RunnerClass.AZ_driver.findElement(Locators.petAmount).click();
+							AL_PropertyWare.clearTextField();
+							Thread.sleep(1000);
 							AL_RunnerClass.AZ_driver.findElement(Locators.petAmount).sendKeys(AL_PropertyWare.petRent);
 							}
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet Rent");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet Rent"+'\n');
 							temp=1;
 						}
 						try
 						{
 							if(AL_PropertyWare.petRent.equalsIgnoreCase("Error"))
 							{
-								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet One Time Non-Refundable Fee");
+								InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet One Time Non-Refundable Fee"+'\n');
 								temp=1;
 							}
 							else
 							{
 							AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.tenantOneTimePetFee)).build().perform();
+							AL_RunnerClass.AZ_driver.findElement(Locators.tenantOneTimePetFee).click();
+							Thread.sleep(1000);
+							AL_PropertyWare.clearTextField();
 							AL_RunnerClass.AZ_driver.findElement(Locators.tenantOneTimePetFee).sendKeys(AL_PropertyWare.petOneTimeNonRefundableFee);
 							}
 						}
 						catch(Exception e)
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet One Time Non-Refundable Fee");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "pet One Time Non-Refundable Fee"+'\n');
 							temp=1;
 						}
-					if(AL_PropertyWare.countOfTypeWordInText>2)
+					/*
+						if(AL_PropertyWare.countOfTypeWordInText>2)
 					{
 						try
 						{
@@ -742,7 +733,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 						}
 						
 					}
-					
+					*/
 					}
 
 					//Late Charges
@@ -751,7 +742,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.lateChargeDay.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Day");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Day"+'\n');
 							temp=1;
 						}
 						else
@@ -763,7 +754,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Day");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Day"+'\n');
 						temp=1;
 					}
 					// Initial Fee
@@ -771,18 +762,21 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.lateChargeFee.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee"+'\n');
 							temp=1;
 						}
 						else
 						{
 						AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.initialFee)).build().perform();
+						AL_RunnerClass.AZ_driver.findElement(Locators.initialFee).click();
+						Thread.sleep(1000);
+						AL_PropertyWare.clearTextField();
 						AL_RunnerClass.AZ_driver.findElement(Locators.initialFee).sendKeys(AL_PropertyWare.lateChargeFee);
 						}
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee"+'\n');
 						temp=1;
 					}
 					try
@@ -800,7 +794,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Initial fee Dropdown");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Initial fee Dropdown"+'\n');
 						temp=1;
 					}
 					
@@ -809,19 +803,22 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.additionalLateCharges.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day"+'\n');
 							temp=1;
 						}
 						else
 						{
 						AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.perDayFee)).build().perform();
+						AL_RunnerClass.AZ_driver.findElement(Locators.perDayFee).click();
+						Thread.sleep(1000);
+						AL_PropertyWare.clearTextField();
 						AL_RunnerClass.AZ_driver.findElement(Locators.perDayFee).sendKeys(AL_PropertyWare.additionalLateCharges);
 						}
 					}
 					catch(Exception e)
 					{
 						e.printStackTrace();
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day"+'\n');
 						temp=1;
 					}
 
@@ -832,7 +829,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day Dropdown");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Per Day Dropdown"+'\n');
 						temp=1;
 					}
 					
@@ -844,7 +841,7 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Fee Maximum dropdown");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Fee Maximum dropdown"+'\n');
 						temp=1;
 					}
 					// Additional Late charges Limit
@@ -863,17 +860,20 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					{
 						if(AL_PropertyWare.additionalLateChargesLimit.equalsIgnoreCase("Error"))
 						{
-							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Limit");
+							InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Limit"+'\n');
 							temp=1;
 						}
 						else
 						{
+							AL_RunnerClass.AZ_driver.findElement(Locators.maximumDatField).click();
+							Thread.sleep(1000);
+							AL_PropertyWare.clearTextField();
 							AL_RunnerClass.AZ_driver.findElement(Locators.maximumDatField).sendKeys(AL_PropertyWare.additionalLateChargesLimit);
 						}
 					}
 					catch(Exception e)
 					{
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Limit");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Late Charge Fee Limit"+'\n');
 						temp=1;
 					}
 					try
@@ -885,10 +885,21 @@ public class AL_InsertDataIntoPropertyWare_OtherPortfolios
 					catch(Exception e)
 					{
 						e.printStackTrace();
-						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Maximum Limit Dropdown 2");
+						InsertDataIntoDatabase.notAutomatedFields(RunnerClass.leaseName, "Maximum Limit Dropdown 2"+'\n');
 						temp=1;
 					}
 					
+					Thread.sleep(2000);
+					AL_RunnerClass.AZ_js.executeScript("window.scrollTo(0,document.body.scrollHeight)");
+					try
+					{
+						AL_RunnerClass.AZ_actions.moveToElement(AL_RunnerClass.AZ_driver.findElement(Locators.saveLease)).click(AL_RunnerClass.AZ_driver.findElement(Locators.saveLease)).build().perform();
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					Thread.sleep(5000);
 					if(temp==0)
 						RunnerClass.leaseCompletedStatus = 1;
 						else RunnerClass.leaseCompletedStatus = 3;

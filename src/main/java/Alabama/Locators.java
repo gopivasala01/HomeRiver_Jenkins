@@ -28,7 +28,8 @@ public class Locators
     public static By accountDropdown = By.name("charge.GLAccountID");
     public static By accountList = By.xpath("(//*[@class='edit'])[9]/descendant::select[1]/optgroup/option");
     public static By referenceName = By.name("charge.refNo");
-    public static By moveInCharges_List =By.xpath("//*[@id='ledgerDataTable']/tbody/tr/td[4]");
+    public static By moveInCharges_List =By.xpath("//*[@id='ledgerDataTable']/tbody/tr/td[5]");
+    public static By moveInCharge_List_Amount = By.xpath("//*[@id='ledgerDataTable']/tbody/tr/td[8]");
     public static By moveInChargeAmount = By.name("charge.editAmountAsString");
     public static By moveInChargeDate = By.name("charge.dateAsString");
     public static By moveInChargeSave = By.xpath("//*[@value='Save']");
@@ -39,7 +40,8 @@ public class Locators
     public static By newAutoCharge = By.xpath("//*[@value='New Auto Charge']");
     public static By rcField = By.xpath("//*[text()='RC']/following::input[1]");
     public static By autoCharge_Description = By.name("charge.description");
-    public static By autoCharge_List = By.xpath("//*[@id='autoChargesTable']/tbody/tr/td[8]");
+    public static By autoCharge_List = By.xpath("//*[@id='autoChargesTable']/tbody/tr/td[1]");
+    public static By autoCharge_List_Amounts = By.xpath("//*[@id='autoChargesTable']/tbody/tr/td[3]");
     public static By autoCharge_StartDate = By.name("charge.startDateAsString");
     public static By autoCharge_EndDate = By.name("charge.endDateAsString");
     public static By autoCharge_Amount = By.name("charge.amountAsString");
@@ -61,6 +63,7 @@ public class Locators
     public static By serviceAnimalBreed = By.xpath("//*[text()='Pet 2 Breed']/following::input[1]");
     public static By serviceAnimalWeight = By.xpath("//*[text()='Pet 2 Weight']/following::input[1]");
     public static By petAmount = By.xpath("//*[text()='Pet Rent Amount']/following::input[1]");
+    public static By petDepositAmount = By.xpath("//*[text()='Pet Deposit Amount']/following::input[1]");
     public static By tenantOneTimePetFee = By.xpath("//*[text()='Tenant One-time Pet Fee']/following::input[1]");
     public static By petSpecialProvisions = By.xpath("//*[text()='Pet Special Provisions']/following::input[1]");
     public static By lateFeeDueDay = By.name("entity.lateFee.dueDay");
@@ -71,6 +74,8 @@ public class Locators
     public static By maximumYesNoDropdown = By.name("entity.lateFee.limitAmount");
     public static By maximumDropdown2 = By.name("entity.lateFee.limitTypeMethod");
     public static By maximumDatField = By.name("entity.lateFee.maxAmountAsString");
+    public static By saveLease = By.xpath("(//*[@class='primaryButtons'])[2]/input[1]");
+    public static By initialMonthlyRent = By.xpath("//*[text()='Initial Monthly Rent']/following::input[1]");
     
 
 }

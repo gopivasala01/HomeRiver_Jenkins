@@ -35,7 +35,7 @@ public class AppConfig
 	public static String proratedPetRent_AccountRef = "Pro Rated Pet Rent";
 	
 	public static String petRent_AccountCode = "4005 - Pet Fee";
-	public static String petRent_AccountRef = "Pet Fee";
+	public static String petRent_AccountRef = "Pet Rent";
 	
 	public static String petSecurityDeposit_AccountCode = "2050 - Security Deposit"; // Only if first check box is checked in Pet Addendum
 	public static String petSecurityDeposit_AccountRef = "Pet Security Deposit";

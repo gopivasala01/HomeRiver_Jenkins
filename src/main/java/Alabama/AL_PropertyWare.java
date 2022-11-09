@@ -1,8 +1,12 @@
 package Alabama;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -64,15 +68,29 @@ public class AL_PropertyWare
     public static String securityDeposit="";
     public static String leaseStartDate_PW="";
     public static String leaseEndDate_PW="";
-    public static Double prepaymentCharge;
-    
-    public void login()
+    public static String prepaymentCharge;
+    public static ArrayList<String> petType;
+    public static ArrayList<String> petBreed;
+    public static ArrayList<String> petWeight;
+    public static Robot robot;
+    public static boolean concessionAddendumFlag = false;
+    public static boolean petSecurityDepositFlag = false;
+    public static boolean petFlag = false;
+    public static String portfolioType="";
+    public static boolean proratedRentDateIsInMoveInMonthFlag=false;
+    public static String increasedRent_previousRentStartDate ="";
+    public static String increasedRent_previousRentEndDate ="";
+    public static String increasedRent_amount ="";
+    public static String increasedRent_newStartDate ="";
+    public static String increasedRent_newEndDate ="";
+    public void login() throws Exception
 	{
 		AL_RunnerClass.AZ_driver.get(AppConfig.propertyWareURL);
 		AL_RunnerClass.AZ_driver.findElement(Locators.userName).sendKeys(AppConfig.userName);
 		AL_RunnerClass.AZ_driver.findElement(Locators.password).sendKeys(AppConfig.password);
 		AL_RunnerClass.AZ_driver.findElement(Locators.signMeIn).click();
 		AL_RunnerClass.AZ_driver.manage().window().maximize();
+		robot = new Robot();
 	}
 	
 	public boolean selectLease(String leaseName) throws Exception
@@ -255,6 +273,39 @@ public class AL_PropertyWare
 			return calculatedPetRent;
 		}
 		
+	}
+	public static void clearTextField()
+	{
+		AL_PropertyWare.robot.keyPress(KeyEvent.VK_CONTROL);
+		AL_PropertyWare.robot.keyPress(KeyEvent.VK_A);
+		AL_PropertyWare.robot.keyPress(KeyEvent.VK_BACK_SPACE);
+		AL_PropertyWare.robot.keyRelease(KeyEvent.VK_BACK_SPACE);
+		AL_PropertyWare.robot.keyRelease(KeyEvent.VK_A);
+		AL_PropertyWare.robot.keyRelease(KeyEvent.VK_CONTROL);
+	}
+	
+	public static boolean checkProratedRentDateIsInMoveInMonth()
+	{
+		try
+		{
+		if(proratedRentDate.equalsIgnoreCase("n/a")||proratedRentDate.equalsIgnoreCase("na"))
+			return true;
+		if(proratedRentDate==null||proratedRentDate.equalsIgnoreCase("n/a")||proratedRentDate=="Error")
+			return false;
+		String proratedDate = RunnerClass.convertDate(proratedRentDate);
+		String proratedMonth = proratedDate.split("/")[0];
+		String moveInDate = RunnerClass.convertDate(commensementDate);
+		String moveInMonth = moveInDate.split("/")[0];
+		if(proratedMonth.equalsIgnoreCase(moveInMonth))
+		{
+			return true;
+		}
+		else return false;
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
 	}
 
 }
