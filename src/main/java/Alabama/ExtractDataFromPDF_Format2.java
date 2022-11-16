@@ -1,7 +1,9 @@
 package Alabama;
 
+import java.awt.Robot;
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -13,13 +15,16 @@ import mainPackage.RunnerClass;
 public class ExtractDataFromPDF_Format2 
 {
 
+	
 	public static boolean petFlag;
 	public boolean arizona() throws Exception
 	//public static void main(String[] args) throws Exception 
 	{
 		AL_PropertyWare.petFlag = false;
+		//Empty all values first
+		//AL_RunnerClass.emptyAllValues();
 		//TODO Auto-generated method stub
-		//File file = new File("C:\\Gopi\\Projects\\Property ware\\Lease Close Outs\\PDFS\\Lease_1122_724_268_Bentmoor_Ln_AL_Byrd (2).pdf");
+		//File file = new File("C:\\Gopi\\Projects\\Property ware\\Lease Close Outs\\PDFS\\Florida\\Lease_09.21_09.22_1437_SE_14th_Ter_FL_Reidy.pdf");
 		File file = RunnerClass.getLastModified();
 		FileInputStream fis = new FileInputStream(file);
 		PDDocument document = PDDocument.load(fis);
@@ -93,6 +98,7 @@ public class ExtractDataFromPDF_Format2
 		    }
 	    	if(AL_PropertyWare.monthlyRent.contains("*"))
 	    	{
+	    		AL_PropertyWare.incrementRentFlag = true;
 	    		AL_PropertyWare.monthlyRent = AL_PropertyWare.monthlyRent.replace("*", "");
 	    		System.out.println("Monthly Rent has Asterick *");
 	    		String increasedRent_ProviousRentEndDate = "Per the Landlord, Monthly Rent from "+AL_PropertyWare.commensementDate.trim()+" through ";
@@ -246,7 +252,7 @@ public class ExtractDataFromPDF_Format2
 			    	{
 			    		 String proratedPetRaw = "Prorated Pet Rent: On or before "+AL_PropertyWare.commensementDate.trim()+" Tenant will pay Landlord $";
 				    		AL_PropertyWare.proratedPetRent = text.substring(text.indexOf(proratedPetRaw)+proratedPetRaw.length()).trim().split(" ")[0].trim();//.replaceAll("[a-ZA-Z,]", "");
-				    		if(AL_PropertyWare.proratedPetRent.matches(".*[a-zA-Z]+.*"))
+				    		if(AL_PropertyWare.proratedPetRent.matches(".*[a-zA-Z]+.*")||AL_PropertyWare.proratedPetRent.trim().equals("1."))
 						    {
 						    	AL_PropertyWare.proratedPetRent = "Error";
 						    }
@@ -389,8 +395,6 @@ public class ExtractDataFromPDF_Format2
 	    catch(Exception e)
 	    {}
 		return true;
-	    
-	    
-	    
 	}
+	
 }

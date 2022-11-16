@@ -20,8 +20,9 @@ public class ExtractDataFromPDF
 	//public static void main(String args[]) throws Exception
 	{
 		AL_PropertyWare.petFlag = false;
+		//AL_RunnerClass.emptyAllValues();
 		File file = RunnerClass.getLastModified();
-		//File file = new File("C:\\Gopi\\Projects\\Property ware\\Lease Close Outs\\PDFS\\Lease_02.22_01.23_309_Lena_Cain_Blvd_AL_May_- (3).pdf");
+		//File file = new File("C:\\Gopi\\Projects\\Property ware\\Lease Close Outs\\PDFS\\Lease_03.22_03.23_4850_Woodford_Way_AL_Spigne.pdf");
 		FileInputStream fis = new FileInputStream(file);
 		PDDocument document = PDDocument.load(fis);
 	    String text = new PDFTextStripper().getText(document);
@@ -107,7 +108,11 @@ public class ExtractDataFromPDF
 	    }*/
 	    try
 	    {
-		    AL_PropertyWare.monthlyRent = text.substring(text.indexOf(PDFAppConfig.AB_fullRent_Prior)+PDFAppConfig.AB_fullRent_Prior.length()).trim().split(" ")[0].substring(1);//,text.indexOf(PDFAppConfig.AB_fullRent_After)).substring(1).replaceAll("[^.0-9]", "");;
+		    AL_PropertyWare.monthlyRent = text.substring(text.indexOf(PDFAppConfig.AB_fullRent_Prior)+PDFAppConfig.AB_fullRent_Prior.length()).trim().split(" ")[0].trim();//,text.indexOf(PDFAppConfig.AB_fullRent_After)).substring(1).replaceAll("[^.0-9]", "");;
+		    if(RunnerClass.onlyDigits(AL_PropertyWare.monthlyRent.replace(".", "").replace(",", ""))==false)
+		    {
+		    	AL_PropertyWare.monthlyRent = text.substring(text.indexOf(PDFAppConfig.AB_fullRent2_Prior)+PDFAppConfig.AB_fullRent2_Prior.length()).trim().split(" ")[0].trim();
+		    }
 		    if(AL_PropertyWare.monthlyRent.contains("*"))
 		    {
 		    	AL_PropertyWare.monthlyRent = AL_PropertyWare.monthlyRent.replace("*","");
@@ -177,7 +182,16 @@ public class ExtractDataFromPDF
 	    System.out.println("Occupants = "+AL_PropertyWare.occupants.trim());
 	    try
 	    {
-		    AL_PropertyWare.lateChargeDay = text.substring(text.indexOf(PDFAppConfig.AB_lateChargeDay_Prior)+PDFAppConfig.AB_lateChargeDay_Prior.length(),text.indexOf(PDFAppConfig.AB_lateChargeDay_After));
+	    	 AL_PropertyWare.lateChargeDay = text.substring(text.indexOf(PDFAppConfig.AB_lateChargeDay_Prior)+PDFAppConfig.AB_lateChargeDay_Prior.length(),text.indexOf(PDFAppConfig.AB_lateChargeDay_After));
+		        if(AL_PropertyWare.lateChargeDay.contains("rd"))
+		        {
+		        	AL_PropertyWare.lateChargeDay=AL_PropertyWare.lateChargeDay.trim().replace("rd", "");
+		        }
+		        else if(AL_PropertyWare.lateChargeDay.contains("st"))
+		        {
+		        	AL_PropertyWare.lateChargeDay=AL_PropertyWare.lateChargeDay.trim().replace("st", "");
+		        }
+	    	//AL_PropertyWare.lateChargeDay = text.substring(text.indexOf(PDFAppConfig.AB_lateChargeDay_Prior)+PDFAppConfig.AB_lateChargeDay_Prior.length(),text.indexOf(PDFAppConfig.AB_lateChargeDay_After));
 	    }
 	    catch(Exception e)
 	    {
@@ -226,7 +240,7 @@ public class ExtractDataFromPDF
   		{
   			if(AL_PropertyWare.proratedRent.equalsIgnoreCase("n/a")||AL_PropertyWare.proratedRent.equalsIgnoreCase("Error")||AL_PropertyWare.proratedRent.equalsIgnoreCase(""))
   			{
-  				AL_PropertyWare.prepaymentCharge = AL_PropertyWare.monthlyRent;
+  				AL_PropertyWare.prepaymentCharge = "Error";
   			}
   			else
   			{
@@ -451,7 +465,7 @@ public class ExtractDataFromPDF
 	    {}
 	    
 	  
-	   return true;
+	    return true;
     }
 
 }

@@ -77,6 +77,7 @@ public class AL_PropertyWare
     public static boolean petSecurityDepositFlag = false;
     public static boolean petFlag = false;
     public static String portfolioType="";
+    public static boolean incrementRentFlag = false;
     public static boolean proratedRentDateIsInMoveInMonthFlag=false;
     public static String increasedRent_previousRentStartDate ="";
     public static String increasedRent_previousRentEndDate ="";
@@ -296,7 +297,7 @@ public class AL_PropertyWare
 		String proratedMonth = proratedDate.split("/")[0];
 		String moveInDate = RunnerClass.convertDate(commensementDate);
 		String moveInMonth = moveInDate.split("/")[0];
-		if(proratedMonth.equalsIgnoreCase(moveInMonth))
+		if(proratedMonth.equalsIgnoreCase(moveInMonth)||Double.parseDouble(AL_PropertyWare.proratedRent)<=200.00)
 		{
 			return true;
 		}

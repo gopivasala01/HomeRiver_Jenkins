@@ -12,8 +12,10 @@ static String AB_commencementDate_Prior = "Commencement Date:";
 	static String AB_proratedRent_Prior = "Tenant will pay Landlord $";
 	static String AB_proratedRent_After = " as prorated";
 	
-	static String AB_fullRent_Prior = "Tenant will pay Landlord monthly rent in the amount of ";
+	static String AB_fullRent_Prior = "for a total monthly Rent of $";
 	static String AB_fullRent_After = " for each full month during";
+	
+	static String AB_fullRent2_Prior = "Tenant will pay Landlord monthly rent in the amount of $";
 	
 	static String AB_fullRentDate_Prior = "The first full month�s rent is due and payable no later than ";
 	static String AB_fullRentDate_After = "   Thereafter, Tenant will \r\n"
@@ -36,7 +38,7 @@ static String AB_commencementDate_Prior = "Commencement Date:";
 	static String AB_airFilterFee_After = " per month (�HVAC Program Fee�)";
 	
 	static String AB_lateChargeDay_Prior = "11:59 p.m. on the ";
-	static String AB_lateChargeDay_After = "rd day of the month in which it is due";
+	static String AB_lateChargeDay_After = "day of the month in which it is due";
 	
 	static String AB_lateFee_Prior = "late charge equal to ";
 	static String AB_lateFee_After = " of one month�s rent; and; ";

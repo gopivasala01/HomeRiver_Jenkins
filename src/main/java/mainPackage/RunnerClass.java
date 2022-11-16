@@ -17,9 +17,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import Alabama.AL_PropertyWare;
 import Alabama.AL_RunnerClass;
-import Arizona.AZ_PropertyWare;
 import Arizona.AZ_RunnerClass;
+import Florida.FL_RunnerClass;
+//import Arizona.AZ_PropertyWare;
+//import Arizona.AZ_RunnerClass;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class RunnerClass
@@ -46,6 +49,7 @@ public class RunnerClass
 		RunnerClass runnerClass = new RunnerClass();
 		runnerClass.splitLeasesByCompany(GetDataFromDataBase.inProgressLeases);
 		InsertDataIntoDatabase updateStatusInDB = new InsertDataIntoDatabase();
+		AL_PropertyWare propertyWare = new AL_PropertyWare();
 	}
 	public void splitLeasesByCompany(String[][] leasesList) throws Exception
 	{
@@ -62,6 +66,8 @@ public class RunnerClass
 			// Split the Lease Name with "-" and search with first name
 			leaseName = leaseName.split("-")[0].trim();
 			String leaseOwnerName = leasesList[i][3];
+			try
+			{				
 			switch(market)
 			{
 			case "Arizona":
@@ -73,7 +79,14 @@ public class RunnerClass
 				AL_RunnerClass alabama = new AL_RunnerClass();
 				alabama.runAutomation(portfolio,leaseName,leaseOwnerName);
 				break;
+			case "Florida":
+				//case "Arkansas":
+					FL_RunnerClass florida = new FL_RunnerClass();
+					florida.runAutomation(portfolio,leaseName,leaseOwnerName);
+					break;
+			
 			}
+			
 			//Test
 			if(leaseCompletedStatus==1)
 			InsertDataIntoDatabase.insertData(leaseName, "Completed", 4);
@@ -81,22 +94,35 @@ public class RunnerClass
 			     else InsertDataIntoDatabase.insertData(leaseName, "Review",5);
 			
 			System.out.println(market +" ---- " + leaseName+" ---- "+ leaseCompletedStatus);
-			AL_RunnerClass.AZ_driver.close();
+			//AL_RunnerClass.AZ_driver.close();
+			}
+			catch(Exception e)
+			{
+				//AL_RunnerClass.AZ_driver.close();
+			}
 			
 		}
 	}
 	public static boolean onlyDigits(String str)
     {
+		if(str=="")
+			return false;
+		int numberCount =0;
         for (int i = 0; i < str.length(); i++) 
         {
             if (Character.isDigit(str.charAt(i))) 
             {
-                return true;
+            	numberCount++;
+            	//return true;
             }
         }
+        if(numberCount==str.length())
+        return true;
+        else
         return false;
     }
-	public static int nthIndexOf(String str, String subStr, int count) {
+	public static int nthIndexOf(String str, String subStr, int count) 
+	{
 	    int ind = -1;
 	    while(count > 0) {
 	        ind = str.indexOf(subStr, ind + 1);
@@ -108,6 +134,8 @@ public class RunnerClass
 	
 	public static String convertDate(String date)
 	{
+		try
+		{
 		String[] d = date.trim().split(" ");
 		String month = RunnerClass.convertMonth(d[0].trim());
 		if(month.length()==1)
@@ -119,7 +147,10 @@ public class RunnerClass
 		String dateIn = month +"/"+day +"/"+yearAndDate[1].trim();
 		//System.out.println(dateIn);
 		return dateIn;
-				
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public static String dateToMonthAndYear_FirstFullMonth(String date) throws Exception

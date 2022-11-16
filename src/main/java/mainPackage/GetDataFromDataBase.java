@@ -135,7 +135,7 @@ public class GetDataFromDataBase
                 //String portfolio = (String) rs.getObject(2);
                // String buildingName = (String) rs.getObject(3);
                 //String ownerName = (String) rs.getObject(4);
-                System.out.println(charge);
+                //System.out.println(charge);
     				//Company
                 InsertDataIntoPropertyWare_UsingConfigTable.charges[i] = charge;
     				//Port folio
@@ -231,7 +231,7 @@ public class GetDataFromDataBase
             	// Move to beginning
             	rs.beforeFirst();
             }
-            System.out.println("No of Rows - Move In Charges = "+rows);
+            System.out.println("No of Rows - Auto Charges = "+rows);
             InsertDataIntoPropertyWare_UsingConfigTable.autoCharges = new String[rows][6];
            int  i=0;
             while(rs.next())
